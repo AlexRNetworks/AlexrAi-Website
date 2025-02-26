@@ -13,7 +13,7 @@ let isGeneratingResponse = false;
 
 
 // OpenAI API Key and URL
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = import.meta.env.OPENAI_API_KEY;
 const API_REQUEST_URL = "https://api.openai.com/v1/chat/completions";
 
 
