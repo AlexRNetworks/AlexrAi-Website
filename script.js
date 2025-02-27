@@ -23,14 +23,34 @@ const requestApiResponse = async (incomingMessageElement) => {
             body: JSON.stringify({ prompt: currentUserMessage }),
         });
 
-        const responseData = await response.json();
-        if (!response.ok) throw new Error(responseData.error.message);
+        if (!response.ok) {
+            // Handle non-JSON errors or HTTP errors without JSON
+            const errorText = await response.text(); // Get the raw error text
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
 
+        const responseData = await response.json();
         const responseText = responseData; // Assuming netlify function returns the text directly.
         const parsedApiResponse = marked.parse(responseText);
         const rawApiResponse = responseText;
 
         showTypingEffect(rawApiResponse, parsedApiResponse, messageTextElement, incomingMessageElement);
+
+        // Save conversation in local storage
+        let savedConversations = JSON.parse(localStorage.getItem("saved-api-chats")) || [];
+        savedConversations.push({
+            userMessage: currentUserMessage,
+            apiResponse: { choices: [{ message: { content: responseText } }] } // adjusted to match previous data structure
+        });
+        localStorage.setItem("saved-api-chats", JSON.stringify(savedConversations));
+    } catch (error) {
+        isGeneratingResponse = false;
+        messageTextElement.innerText = error.message;
+        messageTextElement.closest(".message").classList.add("message--error");
+    } finally {
+        incomingMessageElement.classList.remove("message--loading");
+    }
+};
 
         // Save conversation in local storage
         let savedConversations = JSON.parse(localStorage.getItem("saved-api-chats")) || [];
