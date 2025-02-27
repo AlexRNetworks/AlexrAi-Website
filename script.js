@@ -13,6 +13,7 @@ let isGeneratingResponse = false;
 const NETLIFY_FUNCTION_URL = '/.netlify/functions/openai';
 
 // Fetch API response based on user input
+// Fetch API response based on user input
 const requestApiResponse = async (incomingMessageElement) => {
     const messageTextElement = incomingMessageElement.querySelector(".message__text");
 
@@ -35,6 +36,22 @@ const requestApiResponse = async (incomingMessageElement) => {
         const rawApiResponse = responseText;
 
         showTypingEffect(rawApiResponse, parsedApiResponse, messageTextElement, incomingMessageElement);
+
+        // Save conversation in local storage
+        let savedConversations = JSON.parse(localStorage.getItem("saved-api-chats")) || [];
+        savedConversations.push({
+            userMessage: currentUserMessage,
+            apiResponse: { choices: [{ message: { content: responseText } }] } // adjusted to match previous data structure
+        });
+        localStorage.setItem("saved-api-chats", JSON.stringify(savedConversations));
+    } catch (error) {
+        isGeneratingResponse = false;
+        messageTextElement.innerText = error.message;
+        messageTextElement.closest(".message").classList.add("message--error");
+    } finally {
+        incomingMessageElement.classList.remove("message--loading");
+    }
+};
 
         // Save conversation in local storage
         let savedConversations = JSON.parse(localStorage.getItem("saved-api-chats")) || [];
