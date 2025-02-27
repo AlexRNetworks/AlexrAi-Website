@@ -99,7 +99,7 @@ body.hide-header .header{
 
 .header__title h1{
    width: fit-content;
-   background: linear-gradient(to right, #4a90e2, #a355b9, #ff6b6b);
+   background: linear-gradient(to right, #4a90e2, #b95555, #ff0303);
    background-clip: text;
    -webkit-background-clip: text;
    text-emphasis-color: transparent;
