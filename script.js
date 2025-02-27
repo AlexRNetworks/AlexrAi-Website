@@ -13,7 +13,6 @@ let isGeneratingResponse = false;
 const NETLIFY_FUNCTION_URL = '/.netlify/functions/openai';
 
 // Fetch API response based on user input
-// Fetch API response based on user input
 const requestApiResponse = async (incomingMessageElement) => {
     const messageTextElement = incomingMessageElement.querySelector(".message__text");
 
@@ -25,55 +24,21 @@ const requestApiResponse = async (incomingMessageElement) => {
         });
 
         if (!response.ok) {
-            // Handle non-JSON errors or HTTP errors without JSON
-            const errorText = await response.text(); // Get the raw error text
+            const errorText = await response.text();
             throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
         }
 
         const responseData = await response.json();
-        const responseText = responseData; // Assuming netlify function returns the text directly.
+        const responseText = responseData;
         const parsedApiResponse = marked.parse(responseText);
         const rawApiResponse = responseText;
 
         showTypingEffect(rawApiResponse, parsedApiResponse, messageTextElement, incomingMessageElement);
 
-        // Save conversation in local storage
         let savedConversations = JSON.parse(localStorage.getItem("saved-api-chats")) || [];
         savedConversations.push({
             userMessage: currentUserMessage,
-            apiResponse: { choices: [{ message: { content: responseText } }] } // adjusted to match previous data structure
-        });
-        localStorage.setItem("saved-api-chats", JSON.stringify(savedConversations));
-    } catch (error) {
-        isGeneratingResponse = false;
-        messageTextElement.innerText = error.message;
-        messageTextElement.closest(".message").classList.add("message--error");
-    } finally {
-        incomingMessageElement.classList.remove("message--loading");
-    }
-};
-
-        // Save conversation in local storage
-        let savedConversations = JSON.parse(localStorage.getItem("saved-api-chats")) || [];
-        savedConversations.push({
-            userMessage: currentUserMessage,
-            apiResponse: { choices: [{ message: { content: responseText } }] } // adjusted to match previous data structure
-        });
-        localStorage.setItem("saved-api-chats", JSON.stringify(savedConversations));
-    } catch (error) {
-        isGeneratingResponse = false;
-        messageTextElement.innerText = error.message;
-        messageTextElement.closest(".message").classList.add("message--error");
-    } finally {
-        incomingMessageElement.classList.remove("message--loading");
-    }
-};
-
-        // Save conversation in local storage
-        let savedConversations = JSON.parse(localStorage.getItem("saved-api-chats")) || [];
-        savedConversations.push({
-            userMessage: currentUserMessage,
-            apiResponse: { choices: [{ message: { content: responseText } }] } // adjusted to match previous data structure
+            apiResponse: { choices: [{ message: { content: responseText } }] }
         });
         localStorage.setItem("saved-api-chats", JSON.stringify(savedConversations));
     } catch (error) {
@@ -95,7 +60,6 @@ const loadSavedChatHistory = () => {
 
     chatHistoryContainer.innerHTML = '';
 
-    // Iterate through saved chat history and display messages
     savedConversations.forEach(conversation => {
         const userMessageHtml = `
             <div class="message__content">
@@ -129,14 +93,12 @@ const loadSavedChatHistory = () => {
 
         const messageTextElement = incomingMessageElement.querySelector(".message__text");
 
-        // Display saved chat without typing effect
         showTypingEffect(rawApiResponse, parsedApiResponse, messageTextElement, incomingMessageElement, true);
     });
 
     document.body.classList.toggle("hide-header", savedConversations.length > 0);
 };
 
-// create a new chat message element
 const createChatMessageElement = (htmlContent, ...cssClasses) => {
     const messageElement = document.createElement("div");
     messageElement.classList.add("message", ...cssClasses);
@@ -144,7 +106,6 @@ const createChatMessageElement = (htmlContent, ...cssClasses) => {
     return messageElement;
 };
 
-// Show typing effect
 const showTypingEffect = (rawText, htmlText, messageElement, incomingMessageElement, skipEffect = false) => {
     const copyIconElement = incomingMessageElement.querySelector(".message__icon");
     copyIconElement.classList.add("hide");
@@ -174,7 +135,6 @@ const showTypingEffect = (rawText, htmlText, messageElement, incomingMessageElem
     }, 75);
 };
 
-// Add copy button to code blocks
 const addCopyButtonToCodeBlocks = () => {
     const codeBlocks = document.querySelectorAll('pre');
     codeBlocks.forEach((block) => {
@@ -203,7 +163,6 @@ const addCopyButtonToCodeBlocks = () => {
     });
 };
 
-// Show loading animation during API request
 const displayLoadingAnimation = () => {
     const loadingHtml = `
         <div class="message__content">
@@ -224,58 +183,53 @@ const displayLoadingAnimation = () => {
     requestApiResponse(loadingMessageElement);
 };
 
-// Copy message to clipboard
 const copyMessageToClipboard = (copyButton) => {
     const messageContent = copyButton.parentElement.querySelector(".message__text").innerText;
 
     navigator.clipboard.writeText(messageContent);
-    copyButton.innerHTML = `<i class='bx bx-check'></i>`; // Confirmation icon
-    setTimeout(() => copyButton.innerHTML = `<i class='bx bx-copy-alt'></i>`, 1000); // Revert icon after 1 second
+    copyButton.innerHTML = `<i class='bx bx-check'></i>`;
+    setTimeout(() => copyButton.innerHTML = `<i class='bx bx-copy-alt'></i>`, 1000);
 };
 
-// Handle sending chat messages
 const handleOutgoingMessage = () => {
     currentUserMessage = messageForm.querySelector(".prompt__form-input").value.trim() || currentUserMessage;
-    if (!currentUserMessage || isGeneratingResponse) return; // Exit if no message or already generating response
+    if (!currentUserMessage || isGeneratingResponse) return;
 
     isGeneratingResponse = true;
-<img class="message__avatar" src="assets/profile.png" alt="User avatar">
+
+    const outgoingMessageHtml = `
+        <div class="message__content">
+            <img class="message__avatar" src="assets/profile.png" alt="User avatar">
             <p class="message__text"></p>
         </div>
+    `;
     
 const outgoingMessageElement = createChatMessageElement(outgoingMessageHtml, "message--outgoing");
-    outgoingMessageElement.querySelector(".message__text").innerText = currentUserMessage;
-    chatHistoryContainer.appendChild(outgoingMessageElement);
+outgoingMessageElement.querySelector(".message__text").innerText = currentUserMessage; 
+chatHistoryContainer.appendChild(outgoingMessageElement);
 
-    messageForm.reset(); // Clear input field
+messageForm.reset();
     document.body.classList.add("hide-header");
-    setTimeout(displayLoadingAnimation, 500); // Show loading animation after delay
+    setTimeout(displayLoadingAnimation, 500);
 };
 
-// Toggle between light and dark themes
 themeToggleButton.addEventListener('click', () => {
     const isLightTheme = document.body.classList.toggle("light_mode");
     localStorage.setItem("themeColor", isLightTheme ? "light_mode" : "dark_mode");
 
-    // Update icon based on theme
     const newIconClass = isLightTheme ? "bx bx-moon" : "bx bx-sun";
     themeToggleButton.querySelector("i").className = newIconClass;
 });
 
-// Clear all chat history
 clearChatButton.addEventListener('click', () => {
     if (confirm("Are you sure you want to delete all chat history?")) {
         localStorage.removeItem("saved-api-chats");
-
-        // Reload chat history to reflect changes
         loadSavedChatHistory();
-
         currentUserMessage = null;
         isGeneratingResponse = false;
     }
 });
 
-// Handle click on suggestion items
 suggestionItems.forEach(suggestion => {
     suggestion.addEventListener('click', () => {
         currentUserMessage = suggestion.querySelector(".suggests__item-text").innerText;
@@ -283,11 +237,9 @@ suggestionItems.forEach(suggestion => {
     });
 });
 
-// Prevent default from submission and handle outgoing message
 messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
     handleOutgoingMessage();
 });
 
-// Load saved chat history on page load
 loadSavedChatHistory();
