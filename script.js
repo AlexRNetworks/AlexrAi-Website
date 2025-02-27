@@ -13,8 +13,8 @@ let isGeneratingResponse = false;
 
 
 // OpenAI API Key and URL
-const OPENAI_API_KEY = import.meta.env.OPENAI_API_KEY;
-const API_REQUEST_URL = "https://api.openai.com/v1/chat/completions";
+const OPENAI_API_KEY = import.meta.env.OPENAI_API_KEY; // This is a test comment to trigger the GitHub Action.
+const API_REQUEST_URL = "https://api.openai.com/v1/chat/completions"; 
 
 
 // Load saved data from local storage
