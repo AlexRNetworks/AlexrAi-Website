@@ -243,3 +243,13 @@ messageForm.addEventListener('submit', (e) => {
 });
 
 loadSavedChatHistory();
+
+// Prompt Length Limiting Code (Add Here)
+const promptInput = document.querySelector(".prompt__form-input");
+const maxChars = 200; // Set your desired character limit
+
+promptInput.addEventListener("input", () => {
+    if (promptInput.value.length > maxChars) {
+        promptInput.value = promptInput.value.slice(0, maxChars);
+    }
+});
