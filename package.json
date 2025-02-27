@@ -1,1 +1,8 @@
-
+{
+  "name": "AlexrAI-Website",
+  "version": "1.0.0",
+  "description": "A openai ran website for free!",
+  "dependencies": {
+    "openai": "^4.0.0"
+  }
+}
