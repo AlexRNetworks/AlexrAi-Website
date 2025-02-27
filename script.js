@@ -13,9 +13,20 @@ let isGeneratingResponse = false;
 
 
 // OpenAI API Key and URL
-const OPENAI_API_KEY = import.meta.env.OPENAI_API_KEY; // This is a test comment to trigger the GitHub Action.
-const API_REQUEST_URL = "https://api.openai.com/v1/chat/completions"; 
-
+// Inside your requestApiResponse function (or wherever you make the API call):
+const requestApiResponse = async (incomingMessageElement) => {
+    // ...
+    try {
+        const response = await fetch('/.netlify/functions/openai', { // Netlify Function URL
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: currentUserMessage }), // Send the prompt
+        });
+        // ... process the response
+    } catch (error) {
+        // ...
+    }
+};
 
 // Load saved data from local storage
 const loadSavedChatHistory = () => {
@@ -123,20 +134,22 @@ const showTypingEffect = (rawText, htmlText, messageElement, incomingMessageElem
 
 
 // Fetch API response based on user input
-// Inside your requestApiResponse function (or wherever you make the API call):
 const requestApiResponse = async (incomingMessageElement) => {
-    // ...
-    try {
-        const response = await fetch('/.netlify/functions/openai', { // Netlify Function URL
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: currentUserMessage }), // Send the prompt
-        });
-        // ... process the response
-    } catch (error) {
-        // ...
-    }
-};
+   const messageTextElement = incomingMessageElement.querySelector(".message__text");
+
+
+   try {
+       const response = await fetch(API_REQUEST_URL, {
+           method: "POST",
+           headers: {
+               "Content-Type": "application/json",
+               "Authorization": `Bearer ${OPENAI_API_KEY}`
+           },
+           body: JSON.stringify({
+               model: "gpt-4",  // or another model such as "gpt-4" if available
+               messages: [{ role: "user", content: currentUserMessage }]
+           }),
+       });
 
 
        const responseData = await response.json();
